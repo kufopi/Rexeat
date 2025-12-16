@@ -1,0 +1,51 @@
+{% extends 'ground.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Emergency Exeat Request{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg rounded-lg overflow-hidden">
+                <div class="card-header bg-gradient-danger text-white py-4">
+                    <h2 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Emergency Exeat Request</h2>
+                </div>
+                <div class="card-body p-5">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-info-circle me-2"></i>This is an emergency request and will be automatically approved.
+                        </div>
+                        <div class="row g-3">
+                            {{ form|crispy }}
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="submit" class="btn btn-danger btn-lg px-4">
+                                <i class="fas fa-paper-plane me-2"></i> Submit Emergency Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-danger {
+        background: linear-gradient(45deg, #e74a3b, #be2617);
+    }
+    .card {
+        border: none;
+    }
+    .form-control, .form-select {
+        border-radius: 0.375rem;
+        padding: 0.75rem 1rem;
+    }
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+    }
+</style>
+{% endblock %}

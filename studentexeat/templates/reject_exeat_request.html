@@ -1,0 +1,14 @@
+{% extends 'ground.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Reject Exeat Request{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Reject Exeat Request for {{ exeat_request.student.user.student_id }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-danger">Submit Rejection</button>
+    </form>
+</div>
+{% endblock %}

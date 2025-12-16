@@ -1,0 +1,70 @@
+{% extends 'ground.html' %}
+
+{% block title %}HOD Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3>HOD Dashboard - {{ user_role.department }}</h3>
+        </div>
+        <div class="card-body">
+            <h5 class="mb-4">Pending Requests</h5>
+            
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Reason</th>
+                            <th>Dates</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in requests %}
+                        <tr>
+                            <td>{{ request.student.name }} ({{ request.student.user.student_id }})</td>
+                            <td>
+                                <a href="{% url 'request_detail' request.id %}" class="text-primary">
+                                    {{ request.reason|truncatewords:7 }}
+                                </a>
+                            </td>
+                            <td>{{ request.start_date|date:"M d" }} - {{ request.end_date|date:"M d" }}</td>
+                            <td>
+                                <span class="badge bg-{% if request.status == 'Approved' %}success{% elif request.status == 'Rejected' %}danger{% else %}warning{% endif %}">
+                                    {{ request.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'approve_hod_exeat_request' request.id %}" class="btn btn-sm btn-success">
+                                    <i class="fas fa-check me-1"></i> Approve
+                                </a>
+                                <a href="{% url 'reject_exeat_request' request.id %}" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-times me-1"></i> Reject
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">No pending requests</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .badge {
+        font-weight: 500;
+        padding: 0.35em 0.65em;
+    }
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+</style>
+{% endblock %}

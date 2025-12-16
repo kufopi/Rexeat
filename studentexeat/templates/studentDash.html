@@ -1,0 +1,350 @@
+{% extends 'ground.html' %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Student Dashboard</h1>
+        <a href="{% url 'create_exeat_request' %}" class="d-none d-sm-inline-block btn btn-primary shadow-sm">
+            <i class="fas fa-plus fa-sm text-white-50 me-1"></i> New Request
+        </a>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Requests</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ recent_activities.count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-alt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+
+
+        <!-- In the stats row -->
+<div class="col-xl-3 col-md-6 mb-4">
+    <div class="card border-left-success shadow h-100 py-2">
+        <div class="card-body">
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                        Fully Approved</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ approved_requests.count }}</div>
+                </div>
+                <div class="col-auto">
+                    <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_requests.count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Rejected</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ rejected_requests.count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Recent Activities -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-primary text-white">
+                    <h6 class="m-0 font-weight-bold"><i class="fas fa-history me-2"></i>Recent Activities</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for activity in recent_activities %}
+                                <tr>
+                                    <td>
+                                        <a href="#" data-bs-toggle="tooltip" title="{{ activity.reason }}">
+                                            {{ activity.reason|truncatewords:5 }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{% if activity.status == 'Approved' %}success{% elif activity.status == 'Rejected' %}danger{% else %}warning{% endif %}">
+                                            {{ activity.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ activity.created_at|date:"M d, Y" }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-3">No activities found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Requests -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-warning text-white">
+                    <h6 class="m-0 font-weight-bold"><i class="fas fa-clock me-2"></i>Pending Requests</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Reason</th>
+                                    <th>Dates</th>
+                                    <th>Submitted</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in pending_requests %}
+                                <tr>
+                                    <td>{{ request.reason|truncatewords:5 }}</td>
+                                    <td>
+                                        <small>{{ request.start_date|date:"M d" }} - {{ request.end_date|date:"M d" }}</small>
+                                    </td>
+                                    <td>{{ request.created_at|timesince }} ago</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-3">No pending requests</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second Row -->
+    <div class="row">
+        <!-- Approved Requests -->
+        <!-- Approved Requests -->
+<!-- Approved Requests -->
+<!-- Approved Requests -->
+<div class="col-lg-6 mb-4">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-success text-white">
+            <h6 class="m-0 font-weight-bold"><i class="fas fa-check-circle me-2"></i>Approved Requests</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Reason</th>
+                            <th>Dates</th>
+                            <th>Approved On</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in approved_requests %}
+                        <tr>
+                            <td>{{ request.reason|truncatewords:5 }}</td>
+                            <td>
+                                <small>{{ request.start_date|date:"M d" }} - {{ request.end_date|date:"M d" }}</small>
+                            </td>
+                            <td>
+                                <small>{{ request.created_at|date:"M d, Y" }}</small>
+                            </td>
+                            <td>
+                                <a href="{% url 'exeat_slip' request.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-print me-1"></i> Print Slip
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-3">No fully approved requests</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <!-- Rejected Requests -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-danger text-white">
+                    <h6 class="m-0 font-weight-bold"><i class="fas fa-times-circle me-2"></i>Rejected Requests</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Reason</th>
+                                    <th>Dates</th>
+                                    <th>Rejection Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in rejected_requests %}
+                                <tr>
+                                    <td>{{ request.reason|truncatewords:5 }}</td>
+                                    <td>
+                                        <small>{{ request.start_date|date:"M d" }} - {{ request.end_date|date:"M d" }}</small>
+                                    </td>
+                                    <td>
+                                        {% if request.rejection_reason %}
+                                            {{ request.rejection_reason|truncatewords:5 }}
+                                        {% else %}
+                                            Not specified
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-3">No rejected requests</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Printable Exeat Slip Modal -->
+    <div class="modal fade" id="printExeatModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Exeat Approval Slip</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="exeatSlipContent">
+                    <!-- Content will be loaded via AJAX -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="printExeatSlip()">
+                        <i class="fas fa-print me-1"></i> Print
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Enable tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+</script>
+
+<script>
+    // Function to load exeat slip content
+    function loadExeatSlip(requestId) {
+        fetch(`/exeat/slip/${requestId}/`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('exeatSlipContent').innerHTML = html;
+                var modal = new bootstrap.Modal(document.getElementById('printExeatModal'));
+                modal.show();
+            });
+    }
+
+    // Function to print the exeat slip
+    function printExeatSlip() {
+        var printContent = document.getElementById('exeatSlipContent').innerHTML;
+        var originalContent = document.body.innerHTML;
+        
+        document.body.innerHTML = printContent;
+        window.print();
+        document.body.innerHTML = originalContent;
+        
+        // Re-show the modal after printing
+        var modal = new bootstrap.Modal(document.getElementById('printExeatModal'));
+        modal.show();
+    }
+
+    // Add print buttons to approved requests table
+    document.addEventListener('DOMContentLoaded', function() {
+        const approvedRows = document.querySelectorAll('#approvedTable tbody tr');
+        approvedRows.forEach(row => {
+            const requestId = row.dataset.requestId;
+            const printCell = document.createElement('td');
+            printCell.innerHTML = `
+                <button class="btn btn-sm btn-outline-primary" onclick="loadExeatSlip('${requestId}')">
+                    <i class="fas fa-print me-1"></i> Print Slip
+                </button>
+            `;
+            row.appendChild(printCell);
+        });
+    });
+</script>
+{% endblock %}

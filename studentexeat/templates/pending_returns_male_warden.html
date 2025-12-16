@@ -1,0 +1,36 @@
+{% extends 'ground.html' %}
+
+{% block title %}Pending Returns - Male Hall Warden{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Pending Returns - Male Hall Warden</h2>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Reason</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in pending_returns %}
+            <tr>
+                <td>{{ request.student.user.student_id }}</td>
+                <td>{{ request.reason }}</td>
+                <td>{{ request.start_date }}</td>
+                <td>{{ request.end_date }}</td>
+                <td>{{ request.status }}</td>
+                <td>
+                    <a href="{% url 'mark_return_male_warden' request.id %}" class="btn btn-success btn-sm">Mark as Returned</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'ground.html' %}
+
+{% block title %}Exeat Verification - {{ exeat.id }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header {% if exeat.status == 'Approved' %}bg-success{% else %}bg-danger{% endif %} text-white">
+            <h4 class="mb-0">Exeat Verification</h4>
+        </div>
+        <div class="card-body">
+            {% if exeat.status == 'Approved' %}
+            <div class="alert alert-success">
+                <h5><i class="fas fa-check-circle me-2"></i>Valid Exeat</h5>
+                <p class="mb-0">This exeat request is approved and valid.</p>
+            </div>
+            {% else %}
+            <div class="alert alert-danger">
+                <h5><i class="fas fa-times-circle me-2"></i>Invalid Exeat</h5>
+                <p class="mb-0">This exeat request is not approved.</p>
+            </div>
+            {% endif %}
+
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h5>Student Information</h5>
+                    <p><strong>Name:</strong> {{ exeat.student.name }}</p>
+                    <p><strong>Matric No:</strong> {{ exeat.student.user.student_id }}</p>
+                    <p><strong>Department:</strong> {{ exeat.student.dept }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Exeat Details</h5>
+                    <p><strong>Request ID:</strong> {{ exeat.id }}</p>
+                    <p><strong>Dates:</strong> {{ exeat.start_date|date:"M d, Y" }} to {{ exeat.end_date|date:"M d, Y" }}</p>
+                    <p><strong>Reason:</strong> {{ exeat.reason }}</p>
+                    {% if exeat.emergency %}
+                    <p><span class="badge bg-danger">Emergency</span></p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-4 text-center">
+                <a href="{% url 'verify_exeat_form' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Verify Another Exeat
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

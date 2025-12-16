@@ -1,0 +1,151 @@
+{% extends 'ground.html' %}
+{% load static  %}
+{% block title %}Exeat Slip - {{ exeat.student.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="exeat-slip p-4 bg-white rounded shadow">
+        <div class="text-center mb-4">
+            <img src="{% static 'logo.jpeg' %}" alt="University Logo" style="height: 80px;" class="mb-3">
+            <h2 class="mb-1">Chrisland University</h2>
+            <h4 class="mb-3">Exeat Approval Slip</h4>
+            <div class="d-flex justify-content-between mb-3">
+                <div class="text-start">
+                    <p class="mb-1"><strong>Request ID:</strong> {{ exeat.id }}</p>
+                    <p class="mb-1"><strong>Date Issued:</strong> {{ exeat.created_at|date:"M d, Y" }}</p>
+                </div>
+                <div class="text-end">
+                    <p class="mb-1"><strong>Valid Until:</strong> {{ exeat.end_date|date:"M d, Y" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Student Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-1"><strong>Name:</strong> {{ exeat.student.name }}</p>
+                        <p class="mb-1"><strong>Matric No:</strong> {{ exeat.student.user.student_id }}</p>
+                        <p class="mb-1"><strong>Department:</strong> {{ exeat.student.dept }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Exeat Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-1"><strong>Reason:</strong> {{ exeat.reason }}</p>
+                        <p class="mb-1"><strong>Start Date:</strong> {{ exeat.start_date|date:"M d, Y" }}</p>
+                        <p class="mb-1"><strong>End Date:</strong> {{ exeat.end_date|date:"M d, Y" }}</p>
+                        {% if exeat.emergency %}
+                        <p class="mb-0"><span class="badge bg-danger">Emergency</span></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Security Verification</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-3" style="border: 1px dashed #ccc; padding: 20px;">
+                            <p class="mb-1">Scan to verify exeat</p>
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ request.build_absolute_uri|urlencode }}" 
+                                 alt="Exeat QR Code" class="img-fluid mb-2">
+                            <p class="mb-0 small text-muted">Request ID: {{ exeat.id }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Approval Signatures</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- In the approval signatures section -->
+<div class="row">
+    <div class="col-md-4 text-center">
+        <p class="mb-1"><strong>Student Affairs</strong></p>
+        <div style="height: 50px; border-bottom: 1px solid #000; margin-bottom: 10px;"></div>
+        <p class="mb-0 small">
+            {% if exeat.approved_by_student_affairs %}
+            Approved: {{ exeat.created_at|date:"M d, Y" }}
+            {% else %}
+            Not Approved
+            {% endif %}
+        </p>
+    </div>
+    <div class="col-md-4 text-center">
+        <p class="mb-1"><strong>HOD</strong></p>
+        <div style="height: 50px; border-bottom: 1px solid #000; margin-bottom: 10px;"></div>
+        <p class="mb-0 small">
+            {% if exeat.approved_by_hod %}
+            Approved: {{ exeat.created_at|date:"M d, Y" }}
+            {% else %}
+            Not Approved
+            {% endif %}
+        </p>
+    </div>
+    <div class="col-md-4 text-center">
+        <p class="mb-1"><strong>Hall Warden</strong></p>
+        <div style="height: 50px; border-bottom: 1px solid #000; margin-bottom: 10px;"></div>
+        <p class="mb-0 small">
+            {% if exeat.approved_by_warden %}
+            Approved: {{ exeat.created_at|date:"M d, Y" }}
+            {% else %}
+            Not Approved
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 text-center small text-muted">
+            <p>This exeat slip must be presented to security when leaving and returning to campus.</p>
+            <p class="mb-0">Unauthorized duplication is prohibited.</p>
+        </div>
+    </div>
+    
+    <div class="text-center mt-3 d-print-none">
+        <button class="btn btn-primary" onclick="window.print()">
+            <i class="fas fa-print me-1"></i> Print Exeat Slip
+        </button>
+        <a href="{% url 'student_dashboard' %}" class="btn btn-secondary ms-2">
+            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<style>
+    @media print {
+        .d-print-none {
+            display: none !important;
+        }
+        body {
+            background-color: white !important;
+        }
+        .exeat-slip {
+            border: none !important;
+            box-shadow: none !important;
+        }
+    }
+    .exeat-slip {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'ground.html' %}
+
+{% block title %}Verify Exeat{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Verify Exeat Request</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'verify_exeat_form' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="request_id" class="form-label">Enter Exeat Request ID</label>
+                            <input type="text" class="form-control" id="request_id" name="request_id" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-1"></i> Verify
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

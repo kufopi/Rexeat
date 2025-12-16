@@ -1,0 +1,319 @@
+{% extends 'ground.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-5">
+    <div class="row">
+        <!-- Welcome Card -->
+        <div class="col-lg-12 mb-4">
+            <div class="card border-0 shadow-lg rounded-lg overflow-hidden">
+                <div class="card-header bg-gradient-primary text-white py-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="mb-0"><i class="fas fa-home me-2"></i>
+                                {% if  request.user.student %}
+                                    Welcome, {{ request.user.student }}!!
+                                {% elif user_role.role == 'HeadOfDepartment' %}
+                                    HOD Dashboard - {{ user_role.department }}
+                                {% elif user_role.role == 'HallWarden' %}
+                                    {{ user_role.gender }} Hall Warden Dashboard
+                                {% elif user_role.role == 'StudentAffairs' %}
+                                    Student Affairs Dashboard
+                                {% else %}
+                                    Welcome!
+                                {% endif %}
+                            </h2>
+                            {% if user_role.role == 'Student' %}
+                                <p class="mb-0">User ID: {{ request.user.student_id }}</p>
+                            {% endif %}
+                        </div>
+                        <span class="badge bg-light text-primary fs-6">
+                            {{ user_role.role }} 
+                            {% if user_role.role == 'HeadOfDepartment' %}
+                                | {{ user_role.department }}
+                            {% elif user_role.role == 'HallWarden' %}
+                                | {{ user_role.gender }} Hall
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for m in messages %}
+                            <div class="alert alert-{{ m.tags }} alert-dismissible fade show" role="alert">
+                                <i class="fas fa-{% if m.tags == 'success' %}check-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
+                                {{ m }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <!-- Quick Stats -->
+                    <div class="row text-center mb-4">
+                        <div class="col-md-3 mb-3 mb-md-0">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Requests</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_requests|default:"0" }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3 mb-md-0">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Approved</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ approved_requests|default:"0" }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3 mb-md-0">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Pending</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_requests|default:"0" }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-left-danger shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                        Rejected</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ rejected_requests|default:"0" }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4">
+                        {% if user_role.role == 'Student' or not user_role %}
+                            <a href="{% url 'create_exeat_request' %}" class="btn btn-primary me-md-2">
+                                <i class="fas fa-plus me-1"></i> New Exeat Request
+                            </a>
+                            <a href="{% url 'student_dashboard' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-tachometer-alt me-1"></i> View Dashboard
+                        </a> 
+                        {% endif %}
+                        
+                        {% if user_role.role == 'StudentAffairs' %}
+                            <a href="{% url 'create_emergency_exeat_by_officer' %}" class="btn btn-danger me-md-2">
+                                <i class="fas fa-exclamation-triangle me-1"></i> Emergency Exeat
+                            </a>
+                            <a href="{% url 'student_affairs_dashboard' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-tasks me-1"></i> Manage Requests
+                            </a>
+                        {% endif %}
+                        
+                        {% if user_role.role == 'HeadOfDepartment' %}
+                            <a href="{% url 'hod_dashboard' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-tasks me-1"></i> Department Requests
+                            </a>
+                        {% endif %}
+                        
+                        {% if user_role.role == 'HallWarden' %}
+                            <a href="{% url user_role.gender.lower|add:'_hall_warden_dashboard' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-tasks me-1"></i> {{ user_role.gender }} Hall Requests
+                            </a>
+                            <a href="{% url 'pending_returns_'|add:user_role.gender.lower|add:'_warden' %}" class="btn btn-outline-warning">
+                                <i class="fas fa-user-check me-1"></i> Pending Returns
+                            </a>
+                        {% endif %}
+                        
+                        {% comment %} <a href="{% url 'student_dashboard' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-tachometer-alt me-1"></i> View Dashboard
+                        </a> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activities (for all users) -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-white">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-history me-1"></i>Recent Activities
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for activity in recent_activities|slice:":5" %}
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">
+                                    {% if user_role.role != 'Student' %}
+                                        {{ activity.student.name }} - 
+                                    {% endif %}
+                                    {{ activity.reason|truncatewords:5 }}
+                                </h6>
+                                <small class="text-{% if activity.status == 'Approved' %}success{% elif activity.status == 'Rejected' %}danger{% else %}warning{% endif %}">
+                                    {{ activity.status }}
+                                </small>
+                            </div>
+                            <p class="mb-1 small">
+                                <i class="fas fa-calendar-day me-1"></i>
+                                {{ activity.start_date|date:"M d" }} - {{ activity.end_date|date:"M d" }}
+                            </p>
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>{{ activity.created_at|timesince }} ago
+                            </small>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-inbox fa-2x mb-2"></i>
+                            <p>No recent activities</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pending Approvals (for staff) -->
+        {% if user_role.role != 'Student' and user_role.role %}
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-white">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="fas fa-clock me-1"></i>Pending Approvals
+                        {% if pending_approvals %}
+                            <span class="badge bg-danger ms-2">{{ pending_approvals.count }}</span>
+                        {% endif %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if pending_approvals %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Department</th>
+                                    <th>Dates</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in pending_approvals|slice:":5" %}
+                                <tr>
+                                    <td>{{ request.student.name }}</td>
+                                    <td>{{ request.student.dept }}</td>
+                                    <td>
+                                        {{ request.start_date|date:"M d" }} - {{ request.end_date|date:"M d" }}
+                                    </td>
+                                    <td>
+                                        {% if user_role.role == 'HeadOfDepartment' %}
+                                        <a href="{% url 'hod_dashboard' %}" class="btn btn-sm btn-outline-primary">Review</a>
+                                        {% elif user_role.role == 'HallWarden' %}
+                                        <a href="{% url user_role.gender.lower|add:'_hall_warden_dashboard' %}" class="btn btn-sm btn-outline-primary">Review</a>
+                                        {% elif user_role.role == 'StudentAffairs' %}
+                                        <a href="{% url 'student_affairs_dashboard' %}" class="btn btn-sm btn-outline-primary">Review</a>
+                                        {% endif %}
+                                        <a href="{% url 'request_detail' request.id %}" class="btn btn-sm btn-outline-info ms-1">Details</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% if pending_approvals.count > 5 %}
+                            <div class="text-end mt-2">
+                                <a href="
+                                    {% if user_role.role == 'HeadOfDepartment' %}
+                                        {% url 'hod_dashboard' %}
+                                    {% elif user_role.role == 'HallWarden' %}
+                                        {% url user_role.gender.lower|add:'_hall_warden_dashboard' %}
+                                    {% elif user_role.role == 'StudentAffairs' %}
+                                        {% url 'student_affairs_dashboard' %}
+                                    {% endif %}
+                                " class="btn btn-sm btn-link">View all</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="fas fa-check-circle fa-2x mb-2"></i>
+                        <p>No pending approvals</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Additional Cards for Wardens -->
+        {% if user_role.role == 'HallWarden' %}
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-white">
+                    <h6 class="m-0 font-weight-bold text-info">
+                        <i class="fas fa-user-clock me-1"></i>Pending Returns
+                        {% if pending_returns_count %}
+                            <span class="badge bg-danger ms-2">{{ pending_returns_count }}</span>
+                        {% endif %}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if pending_returns_count %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            {{ pending_returns_count }} student(s) haven't returned yet
+                        </div>
+                        <a href="{% url 'pending_returns_'|add:user_role.gender.lower|add:'_warden' %}" class="btn btn-outline-warning w-100">
+                            <i class="fas fa-user-check me-1"></i> Manage Returns
+                        </a>
+                    {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-check-circle fa-2x mb-2"></i>
+                            <p>All students have returned</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(45deg, #4e73df, #224abe);
+    }
+    .card {
+        border: none;
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-2px);
+    }
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df!important;
+    }
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a!important;
+    }
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e!important;
+    }
+    .border-left-danger {
+        border-left: 0.25rem solid #e74a3b!important;
+    }
+    .list-group-item {
+        border-left: 0;
+        border-right: 0;
+    }
+    .list-group-item:first-child {
+        border-top: 0;
+    }
+    .list-group-item:last-child {
+        border-bottom: 0;
+    }
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,0.03);
+    }
+</style>
+{% endblock %}
