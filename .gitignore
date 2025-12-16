@@ -12,9 +12,7 @@ dist/
 *.egg-info/
 
 # Django stuff:
-*.sqlite3
-media/
-static/
+# (keep DB, media and static tracked — removed default ignores so these can be committed)
 
 # Env files
 .env
